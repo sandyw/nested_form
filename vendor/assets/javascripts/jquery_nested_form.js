@@ -42,6 +42,7 @@ jQuery(function($) {
       content     = content.replace(regexp, "new_" + new_id);
 
       var field = this.insertFields(content, assoc, link);
+      check_maximum();
       $(link).closest("form")
         .trigger({ type: 'nested:fieldAdded', field: field })
         .trigger({ type: 'nested:fieldAdded:' + assoc, field: field });
@@ -60,10 +61,21 @@ jQuery(function($) {
       // }
       var field = $(link).closest('.fields');
       field.hide();
+      check_maximum();
       $(link).closest("form").trigger({ type: 'nested:fieldRemoved', field: field });
       return false;
     }
   };
+
+  function check_maximum() {
+    $('form a.add_nested_fields').each(function(){
+      var assoc   = $(this).attr('data-association');            // Name of child
+      var maximum = $(this).attr('data-maximum');                // Maximum # of children
+      $('.' + assoc+':visible').length >= maximum ? $(this).hide() : $(this).show();
+    });
+  }
+  
+  check_maximum();
 
   window.nestedFormEvents = new NestedFormEvents();
   $('form a.add_nested_fields').live('click', nestedFormEvents.addFields);
